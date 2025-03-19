@@ -664,23 +664,6 @@ function printLabel(partId) {
 }
 </script>
 
-<script>
-setInterval(() => {
-    fetch('backend_cart.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'action=check_idle_auto_checkout'
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === 'auto_checked_out') {
-            alert("Корзина была автоматически оформлена.");
-            location.reload();
-        }
-    });
-}, 30000);
-</script>
-
 
 </body>
 </html>

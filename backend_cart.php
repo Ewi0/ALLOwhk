@@ -2,21 +2,6 @@
 session_start();
 include 'dbc.php';  // Подключение к базе данных
 
-require_once 'classes/Cart.php';
-
-$cart = new Cart();
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'check_idle_auto_checkout') {
-    if ($cart->hasItems() && $cart->isInactiveFor(180)) {
-        $cart->autoCheckout();
-        echo json_encode(['status' => 'auto_checked_out']);
-    } else {
-        $cart->updateActivity(); // обновим, если пользователь активен
-        echo json_encode(['status' => 'active']);
-    }
-    exit;
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'];
     $part_id = isset($_POST['part_id']) ? intval($_POST['part_id']) : 0;
@@ -181,5 +166,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $response['total'] = number_format($total_price, 2);
     echo json_encode($response);
 }
-
 ?>
