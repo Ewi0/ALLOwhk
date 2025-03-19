@@ -1,90 +1,46 @@
 <?php
-// Database connection
-$con = mysqli_connect("localhost", "root", "", "pbase");
-if (!$con) {
-    die("Cannot connect to server");
-}
+require_once 'classes/Part.php';
 
-// Initialize variables to avoid undefined variable warnings
-$article = $part_name = $quantity = $description = $price = $shelf = $alternative_barcode = '';
-$message = ""; // To store feedback message
-$existing_part_id = ""; // To store existing part's ID for updating
-$reset_form = false; // Flag to reset form fields
+$part = new Part();
+$message = "";
+$reset_form = false;
+$data = [
+    'article' => '',
+    'part_name' => '',
+    'quantity' => '',
+    'description' => '',
+    'price' => '',
+    'shelf' => '',
+    'barcode' => ''
+];
 
-if (isset($_POST['add_part'])) {
-    // Get form input
-    $article = $_POST["article"];
-    $part_name = $_POST["part_name"];
-    $quantity = $_POST["quantity"];
-    $description = $_POST["description"];
-    $price = $_POST["price"];
-    $shelf = $_POST["shelf"];
-    $alternative_barcode = $_POST["alternative_barcode"];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $data = [
+        'article' => $_POST['article'] ?: 'ALLO' . rand(0, 999999),
+        'part_name' => $_POST['part_name'],
+        'quantity' => $_POST['quantity'],
+        'description' => $_POST['description'],
+        'price' => $_POST['price'],
+        'shelf' => $_POST['shelf'],
+        'barcode' => $_POST['alternative_barcode'] ?: $part->generateEAN13()
+    ];
 
-    // If the article is empty, generate a default article
-    if (empty($article)) {
-        $article = 'ALLO' . rand(0, 999999);
-    }
+    $existing = $part->exists($data['article'], $data['barcode']);
 
-    // Check if the article or barcode (including alternative) already exists
-    $check_query = "SELECT * FROM parts WHERE article = '$article' OR barcode = '$alternative_barcode'";
-    $result = mysqli_query($con, $check_query);
-
-    if (mysqli_num_rows($result) > 0) {
-        // Part already exists
-        $row = mysqli_fetch_assoc($result);
-        $existing_part_id = $row['id']; // Store the existing part's ID
-        $message = "<div class='alert alert-warning' role='alert'>
-                        Part with this article or barcode already exists in the database. 
-                        <a href='edit.php?id=$existing_part_id' class='btn btn-primary btn-sm ml-3'>Update Existing Part</a>
-                    </div>";
-        // Keep the form data since part exists
-        $reset_form = false;
+    if ($existing) {
+        $id = $existing['id'];
+        $message = "<div class='alert alert-warning'>Такая деталь уже есть. <a href='edit.php?id=$id'>Редактировать</a></div>";
     } else {
-        // Part does not exist, reset the form data
-        $reset_form = true;
-
-        // Generate a random 9-digit number for the barcode, add the Latvian EAN prefix "475"
-        $ean_base = '475' . str_pad(mt_rand(0, 999999999), 9, '0', STR_PAD_LEFT); 
-
-        // Convert the barcode string to an array of digits
-        $digits = str_split($ean_base);
-
-        // Calculate the checksum according to the EAN-13 standard
-        $sum_even = 0;
-        $sum_odd = 0;
-
-        for ($i = 0; $i < 12; $i++) {
-            if ($i % 2 == 0) {
-                $sum_odd += $digits[$i];
-            } else {
-                $sum_even += $digits[$i];
-            }
+        if ($part->insert($data)) {
+            $message = "<div class='alert alert-success'>Деталь добавлена!</div>";
+            $data = []; // очистим форму
+            $reset_form = true;
+        } else {
+            $message = "<div class='alert alert-danger'>Ошибка при добавлении детали.</div>";
         }
-
-        // Final checksum calculation
-        $checksum = (10 - (($sum_odd + ($sum_even * 3)) % 10)) % 10;
-
-        // Append checksum to create the full EAN-13 barcode
-        $ean13 = $ean_base . $checksum;
-
-        // If the alternative barcode is provided, use it; otherwise, use the generated one
-        $final_barcode = !empty($alternative_barcode) ? $alternative_barcode : $ean13;
-
-        // Insert the new part into the database
-        $q = "INSERT INTO parts (article, part_name, quantity, description, price, shelf, barcode)
-              VALUES ('$article', '$part_name', '$quantity', '$description', '$price', '$shelf', '$final_barcode')";
-        mysqli_query($con, $q);
-
-        // Feedback message for successful addition
-        $message = "<div class='alert alert-success' role='alert'>
-                        New part added successfully!
-                    </div>";
-
-        // Clear the form fields after successful insertion
-        $article = $part_name = $quantity = $description = $price = $shelf = $alternative_barcode = '';
     }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -103,7 +59,7 @@ if (isset($_POST['add_part'])) {
         <form action="add_part.php" method="post">
             <div class="form-group">
                 <label for="article">Article:</label>
-                <input type="text" class="form-control" id="article" name="article" onkeyup="suggestArticle()" autocomplete="off" value="<?php echo !$reset_form ? htmlspecialchars($article) : ''; ?>" 
+                <input type="text" class="form-control" id="article" name="article" onkeyup="suggestArticle()" autocomplete="off" value="<?= $reset_form ? '' : htmlspecialchars($data['article']) ?>" 
                 placeholder="Enter article">
                 <small class="form-text text-muted">Please enter the article number without special characters (only digits).</small>
                 <div id="suggestions" style="border: 1px solid #ccc;"></div> <!-- Место для предложений -->
@@ -120,41 +76,41 @@ if (isset($_POST['add_part'])) {
             <div class="form-group">
                 <label for="part_name">Part Name:</label>
                 <input type="text" class="form-control" id="part_name" name="part_name" 
-                       value="<?php echo !$reset_form ? htmlspecialchars($part_name) : ''; ?>" 
+                       value="<?= $reset_form ? '' : htmlspecialchars($data['part_name']) ?>" 
                        placeholder="Enter part name" required>
             </div>
 
             <div class="form-group">
                 <label for="quantity">Quantity:</label>
                 <input type="number" class="form-control" id="quantity" name="quantity" 
-                       value="<?php echo !$reset_form ? htmlspecialchars($quantity) : ''; ?>" 
+                       value="<?= $reset_form ? '' : htmlspecialchars($data['quantity']) ?>" 
                        placeholder="Enter quantity" step="0.01">
             </div>
 
             <div class="form-group">
                 <label for="price">Price (€):</label>
                 <input type="number" class="form-control" id="price" name="price" 
-                       value="<?php echo !$reset_form ? htmlspecialchars($price) : ''; ?>" 
+                       value="<?= $reset_form ? '' : htmlspecialchars($data['price']) ?>" 
                        placeholder="Enter price in euros" step="0.001">
             </div>
 
             <div class="form-group">
                 <label for="description">Description:</label>
                 <textarea class="form-control" id="description" name="description" 
-                          placeholder="Enter description"><?php echo !$reset_form ? htmlspecialchars($description) : ''; ?></textarea>
+                          placeholder="Enter description"><?= $reset_form ? '' : htmlspecialchars($data['description']) ?></textarea>
             </div>
 
             <div class="form-group">
                 <label for="shelf">Shelf:</label>
                 <input type="text" class="form-control" id="shelf" name="shelf" 
-                       value="<?php echo !$reset_form ? htmlspecialchars($shelf) : ''; ?>" 
+                       value="<?= $reset_form ? '' : htmlspecialchars($data['shelf']) ?>" 
                        placeholder="Enter shelf location" required>
             </div>
 
             <div class="form-group">
                 <label for="alternative_barcode">Alternative Barcode (optional):</label>
                 <input type="text" class="form-control" id="alternative_barcode" name="alternative_barcode" 
-                       value="<?php echo !$reset_form ? htmlspecialchars($alternative_barcode) : ''; ?>" 
+                       value="<?= $reset_form ? '' : htmlspecialchars($data['barcode']) ?>" 
                        placeholder="Enter alternative barcode">
             </div>
 
