@@ -667,6 +667,3 @@ function printLabel(partId) {
 
 </body>
 </html>
-
-
-<!-- test pulling requests -->
