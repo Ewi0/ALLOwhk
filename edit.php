@@ -35,6 +35,9 @@
   <body>
     <div class="container mt-5">
       <h1>Edit Part</h1>
+      <?php if (!empty($message)) : ?>
+        <div class="alert alert-danger"><?= $message ?></div>
+      <?php endif; ?>
       <form action="edit.php" method="POST">
         <input type="hidden" name="id" value="<?php echo $part->id ?>">
         

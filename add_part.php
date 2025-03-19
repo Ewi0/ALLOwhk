@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form action="add_part.php" method="post">
             <div class="form-group">
                 <label for="article">Article:</label>
-                <input type="text" class="form-control" id="article" name="article" onkeyup="suggestArticle()" autocomplete="off" value="<?= $reset_form ? '' : htmlspecialchars($data['article']) ?>" 
+                <input type="text" class="form-control" id="article" name="article" onkeyup="suggestArticle()" autocomplete="off" value="<?= $reset_form ? '' : htmlspecialchars($data['article'] ?? '') ?>" 
                 placeholder="Enter article">
                 <small class="form-text text-muted">Please enter the article number without special characters (only digits).</small>
                 <div id="suggestions" style="border: 1px solid #ccc;"></div> <!-- Место для предложений -->
@@ -76,41 +76,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-group">
                 <label for="part_name">Part Name:</label>
                 <input type="text" class="form-control" id="part_name" name="part_name" 
-                       value="<?= $reset_form ? '' : htmlspecialchars($data['part_name']) ?>" 
+                       value="<?= $reset_form ? '' : htmlspecialchars($data['part_name'] ?? '') ?>" 
                        placeholder="Enter part name" required>
             </div>
 
             <div class="form-group">
                 <label for="quantity">Quantity:</label>
                 <input type="number" class="form-control" id="quantity" name="quantity" 
-                       value="<?= $reset_form ? '' : htmlspecialchars($data['quantity']) ?>" 
+                       value="<?= $reset_form ? '' : htmlspecialchars($data['quatity'] ?? '') ?>" 
                        placeholder="Enter quantity" step="0.01">
             </div>
 
             <div class="form-group">
                 <label for="price">Price (€):</label>
                 <input type="number" class="form-control" id="price" name="price" 
-                       value="<?= $reset_form ? '' : htmlspecialchars($data['price']) ?>" 
+                       value="<?= $reset_form ? '' : htmlspecialchars($data['price'] ?? '') ?>" 
                        placeholder="Enter price in euros" step="0.001">
             </div>
 
             <div class="form-group">
                 <label for="description">Description:</label>
                 <textarea class="form-control" id="description" name="description" 
-                          placeholder="Enter description"><?= $reset_form ? '' : htmlspecialchars($data['description']) ?></textarea>
+                          placeholder="Enter description"><?= $reset_form ? '' : htmlspecialchars($data['description'] ?? '') ?></textarea>
             </div>
 
             <div class="form-group">
                 <label for="shelf">Shelf:</label>
                 <input type="text" class="form-control" id="shelf" name="shelf" 
-                       value="<?= $reset_form ? '' : htmlspecialchars($data['shelf']) ?>" 
+                       value="<?= $reset_form ? '' : htmlspecialchars($data['shelf'] ?? '') ?>" 
                        placeholder="Enter shelf location" required>
             </div>
 
             <div class="form-group">
                 <label for="alternative_barcode">Alternative Barcode (optional):</label>
                 <input type="text" class="form-control" id="alternative_barcode" name="alternative_barcode" 
-                       value="<?= $reset_form ? '' : htmlspecialchars($data['barcode']) ?>" 
+                       value="<?= $reset_form ? '' : htmlspecialchars($data['barcode'] ?? '') ?>" 
                        placeholder="Enter alternative barcode">
             </div>
 
