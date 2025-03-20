@@ -25,6 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $response = $cart->removeFromCart($part_id);
             break;
         case 'checkout':
+            if (empty($_SESSION['cart'])) {
+                echo json_encode(['status' => 'error', 'message' => 'Корзина пуста. Добавьте товары.']);
+                exit;
+            }
             $response = $cart->checkout();
             break;
     }
