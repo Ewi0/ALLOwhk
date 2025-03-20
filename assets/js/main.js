@@ -228,56 +228,6 @@ function generateBarcodeSVG(barcode) {
     return svg.outerHTML;
 }
 
-// Function to print selected labels
-function printSelectedLabels() {
-    let selectedParts = [];
-    let checkboxes = document.querySelectorAll('input[name="select_part"]:checked');
-
-    checkboxes.forEach(function(checkbox) {
-        selectedParts.push(checkbox.value); // Get selected part IDs
-    });
-
-    if (selectedParts.length === 0) {
-        alert("Please select at least one part to print.");
-        return;
-    }
-
-    let labelWindow = window.open('', '_blank', 'width=1280,height=720'); // Open a new window for the labels
-
-    // Loop through each selected part to generate labels
-    let allLabelsContent = '<html><head><title>Labels</title></head><body style="font-family: Arial, sans-serif; text-align: center;" onload="window.print(); window.onafterprint = window.close;">';
-
-    selectedParts.forEach(function(partId) {
-        let row = document.querySelector(`tr[data-id='${partId}']`);
-        if (!row) return;
-
-        let article = row.cells[1].textContent;
-        let partName = row.cells[2].textContent;
-        let price = row.cells[4].textContent;
-        let shelf = row.cells[5].textContent;
-        let barcode = row.getAttribute('data-barcode'); // Get the barcode from the row's data attribute
-
-        // Generate the SVG barcode for each part using the updated JsBarcode-based logic
-        let barcodeSVG = generateBarcodeSVG(barcode);
-
-        // Append each label content to the variable with centered content and padding above the article
-        allLabelsContent += `
-            <div class="label" style="margin-bottom: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                <div style="padding-top: 2px;"> <!-- Padding only above the article -->
-                    <strong style="font-size: 18px;">${article}</strong>
-                </div>
-                <div style="font-size: 14px;">${partName}</div>
-                <strong style="font-size: 20px; margin: 1px 1px 0 0">${price}</strong>
-                <div>${barcodeSVG}</div>
-            </div>`;
-    });
-
-    // Close the document after all labels are added
-    allLabelsContent += '</body></html>';
-    labelWindow.document.write(allLabelsContent);
-    labelWindow.document.close();
-}
-
 // Function to print individual labels with padding above the article
 function printLabel(partId) {
     let row = document.querySelector(`tr[data-id='${partId}']`);

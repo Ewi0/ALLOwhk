@@ -119,10 +119,9 @@ $parts_result = $stmt->get_result(); // Результат запрашивае�
 
     <div class="align-items-container">
         <a href="add_part.php" class="btn btn-success" style="margin: 0 10px;">Add New Part</a>
-        <button class="btn btn-secondary btn-sm print-selected-button no-print" onclick="printSelectedLabels()">Print Selected Labels</button>
         <div class="form-group">
             <label for="rows_per_page" class="mr-2">Show rows per page:</label>
-            <select id="rows_per_page" class="form-control" style="width: auto; display: inline-block; margin-top: 20px; margin-right: 20px;" onchange="window.location.href='?rows_per_page=' + this.value">
+            <select id="rows_per_page" class="form-control" style="width: auto; display: inline-block; margin-top: 20px; margin-right: 10px;" onchange="window.location.href='?rows_per_page=' + this.value">
                 <option value="5" <?php if($rows_per_page == 5) echo 'selected'; ?>>5</option>
                 <option value="10" <?php if($rows_per_page == 10) echo 'selected'; ?>>10</option>
                 <option value="20" <?php if($rows_per_page == 20) echo 'selected'; ?>>20</option>
@@ -137,7 +136,6 @@ $parts_result = $stmt->get_result(); // Результат запрашивае�
     <table class="table table-bordered table-hover">
         <thead class="thead-light">
             <tr>
-                <th>Select</th>
                 <th>Article</th>
                 <th>Part Name</th>
                 <th>Quantity</th>
@@ -150,7 +148,6 @@ $parts_result = $stmt->get_result(); // Результат запрашивае�
         <tbody>
             <?php while ($row = $parts_result->fetch_assoc()): ?>
                 <tr data-id="<?php echo $row['id']; ?>" data-barcode="<?php echo $row['barcode']; ?>">
-                    <td style="width: 50px;"><input type="checkbox" name="select_part" value="<?php echo $row['id']; ?>"></td>
                     <td class="copyData"><?php echo $row['article']; ?></td>
                     <td><?php echo $row['part_name']; ?></td>
                     <td><?php echo $row['quantity']; ?></td>
