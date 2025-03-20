@@ -1,0 +1,117 @@
+/* Custom styles */
+.table {
+    margin-top: 20px;
+    box-shadow: 0px 0px 15px rgba(0,0,0,0.1);
+}
+.table th, .table td {
+    vertical-align: middle;
+    text-align: center;
+}
+.container-fluid {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+#popup-message {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        left: 20px;
+        z-index: 9999;
+        display: none;
+    }
+.align-items-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.print-selected-button {
+    margin-right: auto;
+}
+
+.suggestion-box {
+border: 1px solid #ccc;
+background-color: white;
+max-height: 200px;
+overflow-y: auto;
+position: absolute;
+z-index: 1000;
+width: 100%;  /* Make it match the width of the search input */
+max-width: calc(100vw - 40px);  /* Ensure it doesn't overflow the viewport (with some padding) */
+font-family: Arial, sans-serif;
+font-size: 14px;
+margin-bottom: 30px;
+margin-left: 10px;
+}
+
+.suggestion-item {
+padding: 10px;
+border-bottom: 1px solid #eee;
+cursor: pointer;
+}
+
+.suggestion-item strong {
+color: #333;
+font-weight: bold;
+}
+
+.suggestion-item small {
+color: #666;
+}
+
+.suggestion-item:hover {
+background-color: #f7f7f7;
+}
+
+.suggestion-item:last-child {
+border-bottom: none;  /* Remove bottom border for the last suggestion */
+}
+
+
+
+@media print {
+    @page {
+        size: 56mm 38mm; /* Set the exact label size */
+        margin: 0; /* Remove margins */
+        padding: 5px;
+    }
+
+    body {
+        visibility: hidden; /* Hide everything else */
+        margin: 0;
+        padding: 0;
+    }
+
+    .label {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        box-sizing: border-box;
+        visibility: visible; /* Make the label content visible */
+    }
+
+    strong {
+        font-size: 24px; /* Adjust size for strong text */
+        margin: 0;
+    }
+
+    .label-content {
+        margin: 1mm 0; /* Adjust spacing between items */
+    }
+}
+
+.pagination {
+    margin: 0;
+    margin-bottom: 20px;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
