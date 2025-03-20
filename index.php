@@ -41,10 +41,10 @@ if ($page < 1) $page = 1;
     <link rel="icon" type="image/png" sizes="16x16" href="assets/ico/favicon-16x16.png">
     <link rel="manifest" href="ico/site.webmanifest">
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/styles/bootstrap.min.css">
     <link rel="stylesheet" href="assets/styles/style.css">
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="assets/js/jquery-3.7.1.min.js"></script>
 </head>
 <body>
 
@@ -177,7 +177,7 @@ if ($page < 1) $page = 1;
 <?php endif; ?>
 
 <!-- JS и завершение -->
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<script src="assets/js/JsBarcode.all.min.js"></script>
 <script src="assets/js/main.js"></script>
 </div>
 </body>
