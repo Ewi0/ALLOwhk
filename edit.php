@@ -1,6 +1,5 @@
 <?php
-  require_once 'classes/Database.php';
-  require_once 'classes/Part.php';
+  require_once 'autoload.php';
   
   $part = new Part();
   $message = "";

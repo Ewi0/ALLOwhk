@@ -107,6 +107,7 @@ $parts_result = $stmt->get_result(); // Результат запрашивае�
     font-family: Arial, sans-serif;
     font-size: 14px;
     margin-bottom: 30px;
+    margin-left: 10px;
 }
 
 .suggestion-item {
@@ -388,7 +389,7 @@ $(document).on('change', '.cart-quantity', function() {
         <button class="btn btn-secondary btn-sm print-selected-button no-print" onclick="printSelectedLabels()">Print Selected Labels</button>
         <div class="form-group">
             <label for="rows_per_page" class="mr-2">Show rows per page:</label>
-            <select id="rows_per_page" class="form-control" style="width: auto; display: inline-block; margin-top: 20px;" onchange="window.location.href='?rows_per_page=' + this.value">
+            <select id="rows_per_page" class="form-control" style="width: auto; display: inline-block; margin-top: 20px; margin-right: 20px;" onchange="window.location.href='?rows_per_page=' + this.value">
                 <option value="5" <?php if($rows_per_page == 5) echo 'selected'; ?>>5</option>
                 <option value="10" <?php if($rows_per_page == 10) echo 'selected'; ?>>10</option>
                 <option value="20" <?php if($rows_per_page == 20) echo 'selected'; ?>>20</option>
