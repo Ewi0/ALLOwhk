@@ -81,4 +81,58 @@ class Part {
         );
         return $stmt->execute();
     }
+    
+    public function searchParts($search = '', $offset = 0, $limit = 10) {
+        $query = "SELECT * FROM parts";
+        $params = [];
+        $types = '';
+    
+        if (!empty($search)) {
+            $query .= " WHERE part_name LIKE ? OR description LIKE ? OR article LIKE ? OR barcode LIKE ?";
+            $search_term = "%$search%";
+            $params = [$search_term, $search_term, $search_term, $search_term];
+            $types = 'ssss';
+        }
+    
+        $query .= " ORDER BY id DESC LIMIT ? OFFSET ?";
+        $params[] = $limit;
+        $params[] = $offset;
+        $types .= 'ii';
+    
+        $stmt = $this->db->prepare($query);
+    
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+    
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+    
+    public function countParts($search = '') {
+        $query = "SELECT COUNT(*) AS total FROM parts";
+        $params = [];
+        $types = '';
+    
+        if (!empty($search)) {
+            $query .= " WHERE part_name LIKE ? OR description LIKE ? OR article LIKE ? OR barcode LIKE ?";
+            $search_term = "%$search%";
+            $params = [$search_term, $search_term, $search_term, $search_term];
+            $types = 'ssss';
+        }
+    
+        $stmt = $this->db->prepare($query);
+    
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+    
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+    
+        return $row['total'] ?? 0;
+    }    
 }

@@ -164,6 +164,12 @@ $(document).ready(function(){
     });
   });
 // Search suggestor
+
+$(document).on('click', '.suggestion-item', function () {
+    // Найдём ближайшую форму и отправим её
+    $('#search').closest('form').submit();
+});
+
 document.getElementById('search').addEventListener('input', function() {
     let query = this.value;
 
@@ -230,34 +236,30 @@ function generateBarcodeSVG(barcode) {
 
 // Function to print individual labels with padding above the article
 function printLabel(partId) {
-    let row = document.querySelector(`tr[data-id='${partId}']`);
+    const row = document.querySelector(`tr[data-id='${partId}']`);
     if (!row) return;
 
-    let article = row.cells[1].textContent;
-    let partName = row.cells[2].textContent;
-    let price = row.cells[4].textContent;
-    let shelf = row.cells[5].textContent;
-    let barcode = row.getAttribute('data-barcode'); // Get the barcode from the row's data attribute
+    const article = row.cells[0].textContent.trim();
+    const partName = row.cells[1].textContent.trim();
+    const price = row.cells[3].textContent.trim();
+    const barcode = row.getAttribute('data-barcode') || '';
+    const barcodeSVG = generateBarcodeSVG(barcode); // уже у тебя реализован
 
-    let labelWindow = window.open('', '_blank', 'width=1280,height=720');
-
-    // Inject the SVG barcode using the JsBarcode-based function
-    let barcodeSVG = generateBarcodeSVG(barcode);
+    const labelWindow = window.open('', '_blank', 'width=1280,height=720');
 
     labelWindow.document.write(`
         <html>
         <head><title>Label</title></head>
         <body onload="window.print(); window.onafterprint = window.close();" style="font-family: Arial, sans-serif; text-align: center;">
-            <div class="label" style="margin-bottom: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                <div style="padding-top: 2px;"> <!-- Padding only above the article -->
-                    <strong style="font-size: 16px;">${article}</strong>
-                </div>
-                <div style="font-size: 14px;">${partName}</div>
-                <strong style="font-size: 20px; margin: 1px 1px 0 0">${price}</strong>
-                <div>${barcodeSVG}</div>
+            <div style="padding: 3px;">
+                <div style="font-size: 15px; margin-top: 1px; font-weight: bold;">${article}</div>
+                <div style="font-size: 13px;">${partName}</div>
+                <div style="font-size: 20px; margin-top: 1px; font-weight: bold;">${price}</div>
+                <div style="margin-top: 2px;">${barcodeSVG}</div>
             </div>
         </body>
         </html>
     `);
+
     labelWindow.document.close();
 }

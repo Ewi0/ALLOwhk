@@ -41,7 +41,6 @@ max-width: calc(100vw - 40px);  /* Ensure it doesn't overflow the viewport (with
 font-family: Arial, sans-serif;
 font-size: 14px;
 margin-bottom: 30px;
-margin-left: 10px;
 }
 
 .suggestion-item {
