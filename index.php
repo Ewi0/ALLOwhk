@@ -14,14 +14,6 @@ $offset = ($page - 1) * $rows_per_page;
 $parts = $part->searchParts($search, $offset, $rows_per_page);
 $total_rows = $part->countParts($search);
 $total_pages = ceil($total_rows / $rows_per_page);
-?>
-
-
-
-<?php
-require_once 'autoload.php';
-
-$part = new Part();
 
 $rows_per_page = isset($_GET['rows_per_page']) ? (int)$_GET['rows_per_page'] : 20;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -89,7 +81,7 @@ if ($page < 1) $page = 1;
             
         </div>
         <div class="col-12">
-            <button type="submit" class="btn btn-primary w-100">Search</button>
+            <button type="submit" class="btn btn-primary w-100">🔍 Search</button>
         </div>
         <div class="col-12">
             <small class="d-block mt-2">Last search: <?= htmlspecialchars($search_term) ?></small>
@@ -100,7 +92,7 @@ if ($page < 1) $page = 1;
     </form>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <a href="add_part.php" class="btn btn-success">Add New Part</a>
+        <a href="add_part.php" class="btn btn-success">➕ Add New Part</a>
         <form method="GET" class="form-inline">
             <label class="mr-2">Show rows per page:</label>
             <select name="rows_per_page" class="form-control" onchange="this.form.submit()">
@@ -134,10 +126,10 @@ if ($page < 1) $page = 1;
                 <td><?= htmlspecialchars($row['shelf']) ?></td>
                 <td style="width: 260px;"><?= htmlspecialchars($row['description']) ?></td>
                 <td>
-                    <a href="edit.php?id=<?= $row['id'] ?>" class="btn btn-info btn-sm">Edit</a>
-                    <a href="?delete_id=<?= $row['id'] ?>" class="btn btn-danger btn-sm">Delete</a>
-                    <button class="btn btn-secondary btn-sm print-button no-print" onclick="printLabel(<?= $row['id'] ?>)">Print Label</button>
-                    <button class="btn btn-primary btn-sm add-to-cart" data-id="<?= $row['id'] ?>">Добавить в корзину</button>
+                    <button class="btn btn-primary btn-sm add-to-cart" data-id="<?= $row['id'] ?>">🛒 Добавить в корзину</button>
+                    <button class="btn btn-secondary btn-sm print-button no-print" onclick="printLabel(<?= $row['id'] ?>)">🖨️ Print Label</button>
+                    <a href="edit.php?id=<?= $row['id'] ?>" class="btn btn-info btn-sm">✏️ Edit</a>
+                    <a href="?delete_id=<?= $row['id'] ?>" class="btn btn-danger btn-sm">🗑️ Delete</a>
                 </td>
             </tr>
         <?php endforeach; ?>
