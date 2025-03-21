@@ -73,11 +73,11 @@ if ($page < 1) $page = 1;
 
     <div id="popup-message" class="alert alert-success" style="display:none;"></div>
 
-    <h1 class="mb-4">Parts List</h1>
+    <h1 class="mb-4">Список деталей</h1>
 
     <form method="GET" action="index.php" class="form-inline row mb-4">
         <div class="col-12">
-            <input type="text" id="search" name="search" class="form-control w-100 mb-2" placeholder="Search by part name, description, or article" value="" autofocus>
+            <input type="text" id="search" name="search" class="form-control w-100 mb-2" placeholder="Поиск по Артикулу, Названию, Описанию или штрих-коду" value="" autofocus>
             
         </div>
         <div class="col-12">
@@ -92,9 +92,9 @@ if ($page < 1) $page = 1;
     </form>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <a href="add_part.php" class="btn btn-success">➕ Add New Part</a>
+        <a href="add_part.php" class="btn btn-success">➕ Добавить деталь</a>
         <form method="GET" class="form-inline">
-            <label class="mr-2">Show rows per page:</label>
+            <label class="mr-2">Показать строки на странице:</label>
             <select name="rows_per_page" class="form-control" onchange="this.form.submit()">
                 <?php foreach ([5, 10, 20, 50] as $opt): ?>
                     <option value="<?= $opt ?>" <?= $rows_per_page == $opt ? 'selected' : '' ?>><?= $opt ?></option>
@@ -107,13 +107,13 @@ if ($page < 1) $page = 1;
     <table class="table table-bordered table-hover">
         <thead class="thead-light">
             <tr>
-                <th>Article</th>
-                <th>Part Name</th>
-                <th>Quantity</th>
-                <th>Price (€)</th>
-                <th>Shelf</th>
-                <th>Description</th>
-                <th>Actions</th>
+                <th>Артикул</th>
+                <th>Название детали</th>
+                <th>Количество</th>
+                <th>Цена (€)</th>
+                <th>Полка</th>
+                <th>Описание</th>
+                <th>Действия</th>
             </tr>
         </thead>
         <tbody>
@@ -127,9 +127,9 @@ if ($page < 1) $page = 1;
                 <td style="width: 260px;"><?= htmlspecialchars($row['description']) ?></td>
                 <td>
                     <button class="btn btn-primary btn-sm add-to-cart" data-id="<?= $row['id'] ?>">🛒 Добавить в корзину</button>
-                    <button class="btn btn-secondary btn-sm print-button no-print" onclick="printLabel(<?= $row['id'] ?>)">🖨️ Print Label</button>
-                    <a href="edit.php?id=<?= $row['id'] ?>" class="btn btn-info btn-sm">✏️ Edit</a>
-                    <a href="?delete_id=<?= $row['id'] ?>" class="btn btn-danger btn-sm">🗑️ Delete</a>
+                    <button class="btn btn-secondary btn-sm print-button no-print" onclick="printLabel(<?= $row['id'] ?>)">🖨️ Печать</button>
+                    <a href="edit.php?id=<?= $row['id'] ?>" class="btn btn-info btn-sm">✏️ Редактировать</a>
+                    <a href="?delete_id=<?= $row['id'] ?>" class="btn btn-danger btn-sm">🗑️ Удалить</a>
                 </td>
             </tr>
         <?php endforeach; ?>
