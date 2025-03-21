@@ -1,23 +1,27 @@
 <?php
 
-class CartManager {
+class CartManager
+{
     private $db;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->db = (new Database())->getConnection();
         if (!isset($_SESSION['cart'])) {
             $_SESSION['cart'] = [];
         }
     }
 
-    public function addToCart($part_id) {
+    public function addToCart($part_id)
+    {
         $stmt = $this->db->prepare("SELECT * FROM parts WHERE id = ?");
         $stmt->bind_param("i", $part_id);
         $stmt->execute();
         $result = $stmt->get_result();
         $part = $result->fetch_assoc();
 
-        if (!$part) return ['status' => 'error', 'message' => 'Товар не найден'];
+        if (!$part)
+            return ['status' => 'error', 'message' => 'Товар не найден'];
 
         if (isset($_SESSION['cart'][$part_id])) {
             $_SESSION['cart'][$part_id]['quantity'] += 1;
@@ -32,7 +36,8 @@ class CartManager {
         return ['status' => 'success', 'message' => 'Товар добавлен в корзину'];
     }
 
-    public function updateQuantity($part_id, $quantity) {
+    public function updateQuantity($part_id, $quantity)
+    {
         if (isset($_SESSION['cart'][$part_id])) {
             if ($quantity > 0) {
                 $_SESSION['cart'][$part_id]['quantity'] = $quantity;
@@ -44,7 +49,8 @@ class CartManager {
         return ['status' => 'error', 'message' => 'Товар не найден в корзине'];
     }
 
-    public function removeFromCart($part_id) {
+    public function removeFromCart($part_id)
+    {
         if (isset($_SESSION['cart'][$part_id])) {
             unset($_SESSION['cart'][$part_id]);
             return ['status' => 'success', 'message' => 'Товар удалён из корзины'];
@@ -52,9 +58,10 @@ class CartManager {
         return ['status' => 'error', 'message' => 'Товар не найден'];
     }
 
-    public function checkout() {
+    public function checkout()
+    {
         $errors = [];
-
+        $user = $_SESSION['user'] ?? 'Неизвестно';
         foreach ($_SESSION['cart'] as $id => $item) {
             $stmt = $this->db->prepare("SELECT quantity FROM parts WHERE id = ?");
             $stmt->bind_param("i", $id);
@@ -83,7 +90,7 @@ class CartManager {
             $update_stmt->bind_param("di", $new_quantity, $id);
             $update_stmt->execute();
 
-            $insert_stmt = $this->db->prepare("INSERT INTO sales (part_id, part_name, quantity_sold, price_sold, sale_date) VALUES (?, ?, ?, ?, ?)");
+            $insert_stmt = $this->db->prepare("INSERT INTO sales (part_id, part_name, quantity_sold, price_sold, sale_date, user) VALUES (?, ?, ?, ?, ?, '$user')");
             $now = date('Y-m-d H:i:s');
             $insert_stmt->bind_param("isdss", $id, $item['part_name'], $item['quantity'], $item['price'], $now);
             $insert_stmt->execute();
@@ -93,7 +100,8 @@ class CartManager {
         return ['status' => 'success', 'message' => 'Заказ успешно оформлен'];
     }
 
-    public function getCartHtml() {
+    public function getCartHtml()
+    {
         $html = '';
         $total_price = 0;
 

@@ -1,0 +1,14 @@
+CREATE TABLE logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    part_id INT,
+    user VARCHAR(100),
+    action VARCHAR(50),
+    old_value TEXT,
+    new_value TEXT,
+    change_date DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE sales ADD COLUMN user VARCHAR(100) DEFAULT 'Неизвестно';
+
+поправить показ времени разбег на 1 час

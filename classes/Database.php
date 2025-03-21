@@ -1,15 +1,18 @@
 <?php
-class Database {
+class Database
+{
     private $mysqli;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->mysqli = new mysqli("localhost", "root", "", "pbase");
         if ($this->mysqli->connect_error) {
             die("Ошибка подключения к БД: " . $this->mysqli->connect_error);
         }
     }
 
-    public function getConnection() {
+    public function getConnection()
+    {
         return $this->mysqli;
     }
 }

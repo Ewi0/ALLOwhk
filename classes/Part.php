@@ -1,10 +1,14 @@
 <?php
 require_once 'Database.php';
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 class Part {
     private $db;
     private $data = [];
-    public $id, $name, $quantity, $description, $article, $price, $shelf;
+    public $id, $name, $quantity, $description, $article, $price, $shelf, $barcode;
 
     public function __construct() {
         $this->db = (new Database())->getConnection();
@@ -23,12 +27,35 @@ class Part {
             $this->article = $part['article'];
             $this->price = $part['price'];
             $this->shelf = $part['shelf'];
+            $this->barcode = $part['barcode'];
             return true;
         }
         return false;
     }
+    public function getData() {
+        return [
+            'id' => $this->id,
+            'part_name' => $this->name,
+            'quantity' => $this->quantity,
+            'description' => $this->description,
+            'article' => $this->article,
+            'price' => $this->price,
+            'shelf' => $this->shelf,
+            'barcode' => $this->barcode
+        ];
+    }
+    public function loadAssoc($id) {
+        $stmt = $this->db->prepare("SELECT * FROM parts WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
+    }
 
     public function update() {
+        // Получаем старые данные до обновления
+        $oldData = $this->loadAssoc($this->id); // метод ниже
+    
         $stmt = $this->db->prepare("
             UPDATE parts SET part_name = ?, quantity = ?, description = ?, article = ?, price = ?, shelf = ?
             WHERE id = ?
@@ -43,7 +70,28 @@ class Part {
             $this->shelf,
             $this->id
         );
-        return $stmt->execute();
+    
+        $success = $stmt->execute();
+    
+        // Если успешно, логируем
+        if ($success) {
+            $user = $_SESSION['user'] ?? 'Неизвестно';
+            $newData = $this->getData();
+            $logStmt = $this->db->prepare("
+                INSERT INTO logs (part_id, user, action, old_value, new_value)
+                VALUES (?, ?, 'update', ?, ?)
+            ");
+            $logStmt->bind_param(
+                "isss",
+                $this->id,
+                $user,
+                json_encode($oldData, JSON_UNESCAPED_UNICODE),
+                json_encode($newData, JSON_UNESCAPED_UNICODE)
+            );
+            $logStmt->execute();
+        }
+    
+        return $success;
     }
 
     public function exists($article, $barcode) {

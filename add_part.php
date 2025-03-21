@@ -45,23 +45,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Add New Part</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 </head>
+
 <body>
     <div class="container mt-5">
         <h1>Add New Part</h1>
 
         <!-- Feedback message -->
-        <?php if (!empty($message)) { echo $message; } ?>
+        <?php if (!empty($message)) {
+            echo $message;
+        } ?>
 
         <form action="add_part.php" method="post">
             <div class="form-group">
                 <label for="article">Article:</label>
-                <input type="text" class="form-control" id="article" name="article" onkeyup="suggestArticle()" autocomplete="off" value="<?= $reset_form ? '' : htmlspecialchars($data['article'] ?? '') ?>" 
-                placeholder="Enter article">
-                <small class="form-text text-muted">Please enter the article number without special characters (only digits).</small>
+                <input type="text" class="form-control" id="article" name="article" onkeyup="suggestArticle()"
+                    autocomplete="off" value="<?= $reset_form ? '' : htmlspecialchars($data['article'] ?? '') ?>"
+                    placeholder="Enter article">
+                <small class="form-text text-muted">Please enter the article number without special characters (only
+                    digits).</small>
                 <div id="suggestions" style="border: 1px solid #ccc;"></div> <!-- Место для предложений -->
             </div>
 
@@ -75,43 +81,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <div class="form-group">
                 <label for="part_name">Part Name:</label>
-                <input type="text" class="form-control" id="part_name" name="part_name" 
-                       value="<?= $reset_form ? '' : htmlspecialchars($data['part_name'] ?? '') ?>" 
-                       placeholder="Enter part name" required>
+                <input type="text" class="form-control" id="part_name" name="part_name"
+                    value="<?= $reset_form ? '' : htmlspecialchars($data['part_name'] ?? '') ?>"
+                    placeholder="Enter part name" required>
             </div>
 
             <div class="form-group">
                 <label for="quantity">Quantity:</label>
-                <input type="number" class="form-control" id="quantity" name="quantity" 
-                       value="<?= $reset_form ? '' : htmlspecialchars($data['quatity'] ?? '') ?>" 
-                       placeholder="Enter quantity" step="0.01">
+                <input type="number" class="form-control" id="quantity" name="quantity"
+                    value="<?= $reset_form ? '' : htmlspecialchars($data['quatity'] ?? '') ?>"
+                    placeholder="Enter quantity" step="0.01">
             </div>
 
             <div class="form-group">
                 <label for="price">Price (€):</label>
-                <input type="number" class="form-control" id="price" name="price" 
-                       value="<?= $reset_form ? '' : htmlspecialchars($data['price'] ?? '') ?>" 
-                       placeholder="Enter price in euros" step="0.001">
-            </div>
-
-            <div class="form-group">
-                <label for="description">Description:</label>
-                <textarea class="form-control" id="description" name="description" 
-                          placeholder="Enter description"><?= $reset_form ? '' : htmlspecialchars($data['description'] ?? '') ?></textarea>
+                <input type="number" class="form-control" id="price" name="price"
+                    value="<?= $reset_form ? '' : htmlspecialchars($data['price'] ?? '') ?>"
+                    placeholder="Enter price in euros" step="0.001">
             </div>
 
             <div class="form-group">
                 <label for="shelf">Shelf:</label>
-                <input type="text" class="form-control" id="shelf" name="shelf" 
-                       value="<?= $reset_form ? '' : htmlspecialchars($data['shelf'] ?? '') ?>" 
-                       placeholder="Enter shelf location" required>
+                <input type="text" class="form-control" id="shelf" name="shelf"
+                    value="<?= $reset_form ? '' : htmlspecialchars($data['shelf'] ?? '') ?>"
+                    placeholder="Enter shelf location" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea class="form-control" id="description" name="description"
+                    placeholder="Enter description"><?= $reset_form ? '' : htmlspecialchars($data['description'] ?? '') ?></textarea>
             </div>
 
             <div class="form-group">
                 <label for="alternative_barcode">Alternative Barcode (optional):</label>
-                <input type="text" class="form-control" id="alternative_barcode" name="alternative_barcode" 
-                       value="<?= $reset_form ? '' : htmlspecialchars($data['barcode'] ?? '') ?>" 
-                       placeholder="Enter alternative barcode">
+                <input type="text" class="form-control" id="alternative_barcode" name="alternative_barcode"
+                    value="<?= $reset_form ? '' : htmlspecialchars($data['barcode'] ?? '') ?>"
+                    placeholder="Enter alternative barcode">
             </div>
 
             <button type="submit" class="btn btn-success" name="add_part">Add Part</button>
@@ -119,34 +125,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
     <script>
-function suggestArticle() {
-    const article = document.getElementById('article').value;
-    if (article.length > 2) { // Делаем запрос только если введено более 2 символов
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", "suggest_article.php", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                document.getElementById('suggestions').innerHTML = xhr.responseText;
+        function suggestArticle() {
+            const article = document.getElementById('article').value;
+            if (article.length > 2) { // Делаем запрос только если введено более 2 символов
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "suggest_article.php", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        document.getElementById('suggestions').innerHTML = xhr.responseText;
+                    }
+                };
+                xhr.send("article=" + article);
+            } else {
+                document.getElementById('suggestions').innerHTML = '';
             }
-        };
-        xhr.send("article=" + article);
-    } else {
-        document.getElementById('suggestions').innerHTML = '';
-    }
-}
+        }
 
-function fillForm(part) {
-    // Заполняем поля на основе данных из базы
-    document.getElementById('article').value = part.article;   // Заполняем article
-    document.getElementById('alternative_barcode').value = part.barcode;   // Заполняем barcode
-    document.getElementById('part_name').value = part.part_name; // Заполняем part_name
-    document.getElementById('quantity').value = part.quantity; // Заполняем quantity
-    document.getElementById('price').value = part.price;       // Заполняем price
-    document.getElementById('shelf').value = part.shelf;       // Заполняем shelf
+        function fillForm(part) {
+            // Заполняем поля на основе данных из базы
+            document.getElementById('article').value = part.article;   // Заполняем article
+            document.getElementById('alternative_barcode').value = part.barcode;   // Заполняем barcode
+            document.getElementById('part_name').value = part.part_name; // Заполняем part_name
+            document.getElementById('quantity').value = part.quantity; // Заполняем quantity
+            document.getElementById('price').value = part.price;       // Заполняем price
+            document.getElementById('shelf').value = part.shelf;       // Заполняем shelf
 
-    document.getElementById('suggestions').innerHTML = ''; // Убираем подсказки после выбора
-}
-</script>
+            document.getElementById('suggestions').innerHTML = ''; // Убираем подсказки после выбора
+        }
+    </script>
 </body>
+
 </html>

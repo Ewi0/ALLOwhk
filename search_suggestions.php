@@ -27,10 +27,10 @@ if (isset($_GET['query'])) {
     $suggestions = [];
     while ($row = $result->fetch_assoc()) {
         $suggestions[] = [
-            'part_name'   => $row['part_name'],
-            'article'     => $row['article'],
+            'part_name' => $row['part_name'],
+            'article' => $row['article'],
             'description' => $row['description'],
-            'barcode'     => $row['barcode']
+            'barcode' => $row['barcode']
         ];
     }
 
