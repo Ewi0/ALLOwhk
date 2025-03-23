@@ -45,6 +45,101 @@ $logs = $result->fetch_all(MYSQLI_ASSOC);
             </div>
         </div>
 
+    <!-- THIS PART OF CODE I NEED TO REFACTOR FOR BETTER UNDERSTANDING OF PURCHASES -->
+
+    <?php
+
+    
+$currentMonth = date('Y-m');
+$compareMonth = $_GET['compare'] ?? null;
+
+// Получаем доступные месяцы
+$stmt = $db->prepare("SELECT DISTINCT DATE_FORMAT(sale_date, '%Y-%m') as month 
+                      FROM sales WHERE part_id = ? ORDER BY month DESC");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$months = [];
+while ($row = $result->fetch_assoc()) {
+    if ($row['month'] !== $currentMonth) {
+        $months[] = $row['month'];
+    }
+}
+
+// Форма выбора месяца
+?>
+<form method="GET" class="form-inline mb-3">
+    <input type="hidden" name="id" value="<?= $id ?>">
+    <label class="mr-2">📅 Сравнить с:</label>
+    <select name="compare" class="form-control mr-2" onchange="this.form.submit()">
+        <option disabled selected>Выберите месяц</option>
+        <?php foreach ($months as $month): ?>
+            <option value="<?= $month ?>" <?= $compareMonth === $month ? 'selected' : '' ?>>
+                <?= date('F Y', strtotime($month)) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+</form>
+
+<?php
+// Функция получения данных за месяц
+function getMonthSales($db, $part_id, $month) {
+    $qty = '';
+    $sum = '';
+    $stmt = $db->prepare("SELECT 
+        COALESCE(SUM(quantity_sold), 0),
+        COALESCE(SUM(quantity_sold * price_sold), 0)
+        FROM sales 
+        WHERE part_id = ? AND DATE_FORMAT(sale_date, '%Y-%m') = ?");
+    $stmt->bind_param("is", $part_id, $month);
+    $stmt->execute();
+    $stmt->bind_result($qty, $sum);
+    $stmt->fetch();
+    $stmt->close();
+    return ['qty' => $qty, 'sum' => $sum];
+}
+
+// Получение данных
+$currentSales = getMonthSales($db, $id, $currentMonth);
+$compareSales = $compareMonth ? getMonthSales($db, $id, $compareMonth) : null;
+?>
+
+<?php if ($compareSales): ?>
+    <?php
+    $qtyDiff = $currentSales['qty'] - $compareSales['qty'];
+    $sumDiff = $currentSales['sum'] - $compareSales['sum'];
+    ?>
+    <h4 class="mt-4">📊 Сравнение <?= date('F Y') ?> и <?= date('F Y', strtotime($compareMonth)) ?></h4>
+    <table class="table table-sm table-bordered w-100">
+        <thead class="thead-light">
+        <tr>
+            <th>Показатель</th>
+            <th><?= date('F Y') ?></th>
+            <th><?= date('F Y', strtotime($compareMonth)) ?></th>
+            <th>Разница</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Продано (шт)</td>
+            <td><?= $currentSales['qty'] ?></td>
+            <td><?= $compareSales['qty'] ?></td>
+            <td><?= $qtyDiff ?></td>
+        </tr>
+        <tr>
+            <td>Сумма (€)</td>
+            <td>€<?= number_format($currentSales['sum'], 2) ?></td>
+            <td>€<?= number_format($compareSales['sum'], 2) ?></td>
+            <td>€<?= number_format($sumDiff, 2) ?></td>
+        </tr>
+        </tbody>
+    </table>
+<?php endif; ?>
+
+
+    <!-- THIS PART OF CODE I NEED TO REFACTOR FOR BETTER UNDERSTANDING OF PURCHASES -->
+
         <h4 class="mb-3">🕓 История изменений</h4>
         <?php if (count($logs) > 0): ?>
             <table class="table table-bordered table-hover">
