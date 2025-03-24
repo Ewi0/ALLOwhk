@@ -12,14 +12,9 @@ if (!isset($_GET['id'])) {
 
 $id = (int) $_GET['id'];
 $part->load($id);
-$data = $part->getData();
 
-// Получаем историю изменений
-$stmt = $db->prepare("SELECT * FROM logs WHERE part_id = ? ORDER BY change_date DESC");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
-$logs = $result->fetch_all(MYSQLI_ASSOC);
+$logs = $part->getChangeLogs();
+$sales = $part->getSales();
 ?>
 
 <!DOCTYPE html>
@@ -32,17 +27,21 @@ $logs = $result->fetch_all(MYSQLI_ASSOC);
 </head>
 
 <body class="p-4">
+        
     <div class="container">
-        <h2 class="mb-4">🧾 История изменения: <?= htmlspecialchars($data['part_name']) ?></h2>
+    <div class="text-right" style="margin-bottom: 10px;">
+            <a href="javascript:history.back()" class="btn btn-secondary mt-3">← Назад к списку</a>
+        </div>
+        <h2 class="mb-4">🧾 История изменения: <?= htmlspecialchars($part->name) ?></h2>
 
         <div class="card mb-4">
             <div class="card-body">
-                <p><strong>Артикул:</strong> <?= htmlspecialchars($data['article']) ?></p>
-                <p><strong>Цена:</strong> €<?= number_format($data['price'], 2) ?></p>
-                <p><strong>Количество:</strong> <?= $data['quantity'] ?></p>
-                <p><strong>Полка:</strong> <?= htmlspecialchars($data['shelf']) ?></p>
-                <p><strong>Описание:</strong> <?= htmlspecialchars($data['description']) ?></p>
-                <p><strong>Штрихкод:</strong> <?= htmlspecialchars($data['barcode']) ?></p>
+                <p><strong>Артикул:</strong> <?= htmlspecialchars($part->article) ?></p>
+                <p><strong>Цена:</strong> €<?= number_format($part->price, 2) ?></p>
+                <p><strong>Количество:</strong> <?= $part->quantity ?></p>
+                <p><strong>Полка:</strong> <?= htmlspecialchars($part->shelf) ?></p>
+                <p><strong>Описание:</strong> <?= htmlspecialchars($part->description) ?></p>
+                <p><strong>Штрихкод:</strong> <?= htmlspecialchars($part->barcode) ?></p>
             </div>
         </div>
 
@@ -230,14 +229,6 @@ $compareSales = $compareMonth ? getMonthSales($db, $id, $compareMonth) : null;
             <div class="alert alert-info">Изменений пока нет.</div>
         <?php endif; ?>
         <h4 class="mt-5">💰 История продаж</h4>
-        <?php
-        $salesStmt = $db->prepare("SELECT * FROM sales WHERE part_id = ? ORDER BY sale_date DESC");
-        $salesStmt->bind_param("i", $id);
-        $salesStmt->execute();
-        $salesResult = $salesStmt->get_result();
-        $sales = $salesResult->fetch_all(MYSQLI_ASSOC);
-        ?>
-
         <?php if (count($sales) > 0): ?>
             <table class="table table-sm table-bordered table-hover">
                 <thead class="thead-light">
@@ -264,8 +255,6 @@ $compareSales = $compareMonth ? getMonthSales($db, $id, $compareMonth) : null;
         <?php else: ?>
             <div class="alert alert-info">Продаж ещё не было.</div>
         <?php endif; ?>
-
-        <a href="index.php" class="btn btn-secondary mt-3">← Назад к списку</a>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>

@@ -182,5 +182,19 @@ class Part {
         $row = $result->fetch_assoc();
     
         return $row['total'] ?? 0;
-    }    
+    }
+    public function getChangeLogs() {
+        $stmt = $this->db->prepare("SELECT * FROM logs WHERE part_id = ? ORDER BY change_date DESC");
+        $stmt->bind_param("i", $this->id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+    public function getSales() {
+        $salesStmt = $this->db->prepare("SELECT * FROM sales WHERE part_id = ? ORDER BY sale_date DESC");
+        $salesStmt->bind_param("i", $this->id);
+        $salesStmt->execute();
+        $salesResult = $salesStmt->get_result();
+        return $salesResult->fetch_all(MYSQLI_ASSOC);
+    }
 }
