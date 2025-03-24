@@ -42,6 +42,7 @@ $logs = $result->fetch_all(MYSQLI_ASSOC);
                 <p><strong>Количество:</strong> <?= $data['quantity'] ?></p>
                 <p><strong>Полка:</strong> <?= htmlspecialchars($data['shelf']) ?></p>
                 <p><strong>Описание:</strong> <?= htmlspecialchars($data['description']) ?></p>
+                <p><strong>Штрихкод:</strong> <?= htmlspecialchars($data['barcode']) ?></p>
             </div>
         </div>
 
