@@ -1,5 +1,22 @@
 <?php
 require_once 'autoload.php';
+
+// Обработка удаления детали
+if (isset($_GET['delete_id'])) {
+    $part = new Part();
+    $part->load((int)$_GET['delete_id']);
+    
+    if ($part->delete()) {
+        $_SESSION['success_message'] = "Деталь успешно удалена.";
+    } else {
+        $_SESSION['error_message'] = "Ошибка при удалении детали.";
+    }
+    
+    // Перенаправляем на главную страницу
+    header("Location: index.php");
+    exit;
+}
+
 session_start();
 
 if (!isset($_SESSION['user'])) {

@@ -197,4 +197,21 @@ class Part {
         $salesResult = $salesStmt->get_result();
         return $salesResult->fetch_all(MYSQLI_ASSOC);
     }
+
+    public function delete() {
+        // Сначала удаляем связанные записи из таблицы sales
+        $stmt = $this->db->prepare("DELETE FROM sales WHERE part_id = ?");
+        $stmt->bind_param("i", $this->id);
+        $stmt->execute();
+
+        // Затем удаляем связанные записи из таблицы change_logs
+        $stmt = $this->db->prepare("DELETE FROM change_logs WHERE part_id = ?");
+        $stmt->bind_param("i", $this->id);
+        $stmt->execute();
+
+        // И наконец удаляем саму деталь
+        $stmt = $this->db->prepare("DELETE FROM parts WHERE id = ?");
+        $stmt->bind_param("i", $this->id);
+        return $stmt->execute();
+    }
 }

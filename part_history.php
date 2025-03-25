@@ -30,7 +30,7 @@ $sales = $part->getSales();
         
     <div class="container">
     <div class="text-right" style="margin-bottom: 10px;">
-            <a href="javascript:history.back()" class="btn btn-secondary mt-3">← Назад к списку</a>
+            <a href="index.php" class="btn btn-secondary mt-3">← Назад к списку</a>
         </div>
         <h2 class="mb-4">🧾 История изменения: <?= htmlspecialchars($part->name) ?></h2>
 
