@@ -57,17 +57,18 @@ class Part {
         $oldData = $this->loadAssoc($this->id); // метод ниже
     
         $stmt = $this->db->prepare("
-            UPDATE parts SET part_name = ?, quantity = ?, description = ?, article = ?, price = ?, shelf = ?
+            UPDATE parts SET part_name = ?, quantity = ?, description = ?, article = ?, price = ?, shelf = ?, barcode = ?
             WHERE id = ?
         ");
         $stmt->bind_param(
-            "sissdsi",
+            "sissdssi",
             $this->name,
             $this->quantity,
             $this->description,
             $this->article,
             $this->price,
             $this->shelf,
+            $this->barcode,
             $this->id
         );
     
